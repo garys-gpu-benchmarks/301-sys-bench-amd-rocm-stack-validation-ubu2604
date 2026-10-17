@@ -17,7 +17,7 @@ Results are written to `results/benchmark.db` and `results/summary.json`.
 
 This workload is executed on the validation host after the repository is copied there. `setup.sh` and `run_benchmark.sh` do not open an outbound SSH session.
 
-Prerequisites: Ubuntu 26.04; AMD; Python 3.14.4; root or sudo for `setup.sh`. Framework: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS. This is a host benchmark, not a laptop `pip install` project.
+Prerequisites: Ubuntu 26.04; AMD; Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only; root or sudo for `setup.sh`. Framework: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS. This is a host benchmark, not a laptop `pip install` project.
 
 ```mermaid
 flowchart LR
@@ -109,7 +109,7 @@ Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: exp
 - OS: Ubuntu 26.04
 - GPU vendor: AMD
 - Framework family: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS
-- Python: Python 3.14.4
+- Python: Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only
 
 ### Reference validation environment
 
@@ -129,8 +129,8 @@ Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd
 |---|---|
 | OS | Ubuntu 26.04 |
 | Kernel | kernel 7.0.0 |
-| Python | Python 3.14.4 |
-| ROCm | ROCm 7.14 |
+| Python | Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only |
+| ROCm | ROCm 10.1.0 |
 | rocBLAS | N/A - rocBLAS not used |
 
 Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance.

@@ -9,9 +9,9 @@ Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: exp
 | Parameter | CLI Flag | Tested Values | Default | Description |
 | --- | --- | --- | --- | --- |
 | kernel_version | `--kernel-version` | smoke=7.0.0, baseline=7.0.0, extended=7.0.0 | 7.0.0 | From Parameter list; see Execution Description With Parameters. |
-| driver_version | `--driver-version` | smoke=6, baseline=6, extended=6 | 6 | From Parameter list; see Execution Description With Parameters. |
-| rocm_version | `--rocm-version` | smoke=7.14, baseline=7.14, extended=7.14 | 7.14 | From Parameter list; see Execution Description With Parameters. |
-| required_packages | `--required-packages` | smoke=rocm-core,rocm-smi, baseline=rocm-core,rocm-smi, extended=rocm-core,rocm-smi | rocm-core,rocm-smi | From Parameter list; see Execution Description With Parameters. |
+| driver_version | `--driver-version` | smoke=31.60.0, baseline=31.60.0, extended=31.60.0 | 31.60.0 | From Parameter list; see Execution Description With Parameters. |
+| rocm_version | `--rocm-version` | smoke=10.1.0, baseline=10.1.0, extended=10.1.0 | 10.1.0 | From Parameter list; see Execution Description With Parameters. |
+| required_packages | `--required-packages` | smoke=amdrocm10.1,rocm-smi, baseline=amdrocm10.1,rocm-smi, extended=amdrocm10.1,rocm-smi | amdrocm10.1,rocm-smi | From Parameter list; see Execution Description With Parameters. |
 | permissions_check | `--permissions-check` | smoke=true, baseline=true, extended=true | true | From Parameter list; see Execution Description With Parameters. |
 | output_format | `--output-format` | smoke=csv, baseline=csv, extended=csv | csv | From Parameter list; see Execution Description With Parameters. |
 

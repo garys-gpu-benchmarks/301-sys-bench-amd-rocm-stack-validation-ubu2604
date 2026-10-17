@@ -15,6 +15,11 @@
     "value": "AMD"
   },
   {
+    "field_name": "OS Version",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Ubuntu 26.04"
+  },
+  {
     "field_name": "Repo Name",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "sys-bench-amd-rocm-stack-validation-ubu2604"
@@ -97,17 +102,17 @@
   {
     "field_name": "run_benchmark Command Plus Options for Smoke Run",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "bash run_benchmark.sh --smoke --validate --kernel-version 7.0.0 --driver-version 6 --rocm-version 7.14 --required-packages rocm-core,rocm-smi --permissions-check true --output-format csv"
+    "value": "bash run_benchmark.sh --smoke --validate --kernel-version 7.0.0 --driver-version 31.60.0 --rocm-version 10.1.0 --required-packages amdrocm10.1,rocm-smi --permissions-check true --output-format csv"
   },
   {
     "field_name": "run_benchmark Command Plus Options for Baseline Run",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "bash run_benchmark.sh --baseline --validate --kernel-version 7.0.0 --driver-version 6 --rocm-version 7.14 --required-packages rocm-core,rocm-smi --permissions-check true --output-format csv"
+    "value": "bash run_benchmark.sh --baseline --validate --kernel-version 7.0.0 --driver-version 31.60.0 --rocm-version 10.1.0 --required-packages amdrocm10.1,rocm-smi --permissions-check true --output-format csv"
   },
   {
     "field_name": "run_benchmark Command Plus Options for Extended Run",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "bash run_benchmark.sh --extended --validate --kernel-version 7.0.0 --driver-version 6 --rocm-version 7.14 --required-packages rocm-core,rocm-smi --permissions-check true --output-format csv"
+    "value": "bash run_benchmark.sh --extended --validate --kernel-version 7.0.0 --driver-version 31.60.0 --rocm-version 10.1.0 --required-packages amdrocm10.1,rocm-smi --permissions-check true --output-format csv"
   },
   {
     "field_name": "Output Fields / Metrics to Parse",
@@ -140,11 +145,6 @@
     "value": "Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS"
   },
   {
-    "field_name": "OS Version",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Ubuntu 26.04"
-  },
-  {
     "field_name": "Kernel Version",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "kernel 7.0.0"
@@ -162,12 +162,12 @@
   {
     "field_name": "Python Version",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Python 3.14.4"
+    "value": "Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only"
   },
   {
     "field_name": "GPU Runtime Version (was ROCm Version)",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "ROCm 7.14"
+    "value": "ROCm 10.1.0"
   },
   {
     "field_name": "BLAS Version (was rocBLAS version)",
@@ -337,7 +337,7 @@
   {
     "field_name": "System Monitoring Tool",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "rocm-smi"
+    "value": "amd-smi"
   },
   {
     "field_name": "Validation & Diagnostics Suite",
@@ -377,7 +377,7 @@
   {
     "field_name": "ROCm Version",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "ROCm 7.14"
+    "value": "ROCm 10.1.0"
   },
   {
     "field_name": "rocBLAS Version",
@@ -407,7 +407,7 @@
   {
     "field_name": "Profile Parameter Values",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Parameters_SmokeBaselineExtend",
-    "value": "{\"kernel_version\": {\"smoke\": \"7.0.0\", \"baseline\": \"7.0.0\", \"extended\": \"7.0.0\", \"notes\": \"best-effort: no duration knob; baseline 1s class, 3-4 min not reachable\"}, \"driver_version\": {\"smoke\": \"6\", \"baseline\": \"6\", \"extended\": \"6\", \"notes\": \"\"}, \"rocm_version\": {\"smoke\": \"7.14\", \"baseline\": \"7.14\", \"extended\": \"7.14\", \"notes\": \"\"}, \"required_packages\": {\"smoke\": \"rocm-core,rocm-smi\", \"baseline\": \"rocm-core,rocm-smi\", \"extended\": \"rocm-core,rocm-smi\", \"notes\": \"Sweep/list value. Command column documents it; omit this flag so yaml expands cases.\"}, \"permissions_check\": {\"smoke\": \"true\", \"baseline\": \"true\", \"extended\": \"true\", \"notes\": \"\"}, \"output_format\": {\"smoke\": \"csv\", \"baseline\": \"csv\", \"extended\": \"csv\", \"notes\": \"\"}}"
+    "value": "{\"kernel_version\": {\"smoke\": \"7.0.0\", \"baseline\": \"7.0.0\", \"extended\": \"7.0.0\", \"notes\": \"best-effort: no duration knob; baseline 1s class, 3-4 min not reachable\"}, \"driver_version\": {\"smoke\": \"31.60.0\", \"baseline\": \"31.60.0\", \"extended\": \"31.60.0\", \"notes\": \"\"}, \"rocm_version\": {\"smoke\": \"10.1.0\", \"baseline\": \"10.1.0\", \"extended\": \"10.1.0\", \"notes\": \"\"}, \"required_packages\": {\"smoke\": \"amdrocm10.1,rocm-smi\", \"baseline\": \"amdrocm10.1,rocm-smi\", \"extended\": \"amdrocm10.1,rocm-smi\", \"notes\": \"Sweep/list value. Command column documents it; omit this flag so yaml expands cases.\"}, \"permissions_check\": {\"smoke\": \"true\", \"baseline\": \"true\", \"extended\": \"true\", \"notes\": \"\"}, \"output_format\": {\"smoke\": \"csv\", \"baseline\": \"csv\", \"extended\": \"csv\", \"notes\": \"\"}}"
   },
   {
     "field_name": "Profile Command Authorship",
