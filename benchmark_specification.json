@@ -37,27 +37,27 @@
   {
     "field_name": "Metrics",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "#1: ROCm package mismatch count (rocm_package_mismatch_count); #2: Kernel mismatch count (kernel_driver_mismatch_count); #3: Driver compliance percent (driver_compliance_percent); #4: Permission error count (permission_error_count)"
+    "value": "#1: ROCm package mismatch count (rocm_package_mismatch_count); #2: Kernel release mismatch count (kernel_release_mismatch_count); #3: Driver compliance percent (driver_compliance_percent); #4: Permission error count (permission_error_count)"
   },
   {
     "field_name": "Command Tools Executed",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
+    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
   },
   {
     "field_name": "Command Execution Details and Purpose",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance"
+    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance"
   },
   {
     "field_name": "Command Methodology",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run each ROCm stack probe once (rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query), compare package presence, kernel release, driver compliance, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, and emit one compliance row per check. yaml rocm_version is not an exact string compare"
+    "value": "Run each ROCm stack probe once (rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query), compare package presence, kernel release, driver compliance, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, and emit one compliance row per check with that probe's own exit code in rc (127 = tool missing). yaml rocm_version is not an exact string compare"
   },
   {
     "field_name": "Execution Description With Parameters",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. When that field is absent, driver compliance is na (in-tree amdgpu has no version). rocm_version: documented expectation; the collector checks package presence rather than an exact version string. required_packages: dpkg names such as rocm-core,rocm-smi. permissions_check: /dev/kfd and /dev/dri/renderD128 existence/read access. output_format: csv"
+    "value": "Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. When that field is absent, driver compliance is na (in-tree amdgpu has no version). rocm_version: documented expectation; the collector checks package presence rather than an exact version string. required_packages: ROCm 10.x dpkg names such as amdrocm-base10.1,amdrocm-amdsmi10.1 (the legacy rocm-core/rocm-smi packages are not shipped in ROCm 10.x). permissions_check: /dev/kfd and /dev/dri/renderD128 existence/read access. output_format: csv"
   },
   {
     "field_name": "Execution Domain",
@@ -87,7 +87,7 @@
   {
     "field_name": "Raw Output Format",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, rocm-smi.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)"
+    "value": "CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)"
   },
   {
     "field_name": "Primary Record Granularity",
@@ -97,27 +97,27 @@
   {
     "field_name": "Raw Output Example",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "sample_index,check_name,rocm_package_mismatch_count,kernel_driver_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count\n0,rocminfo,0,0,0,0,1,100,0"
+    "value": "sample_index,check_name,rc,rocm_package_mismatch_count,kernel_release_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count\n0,rocminfo,0,0,0,0,0,1,100,0"
   },
   {
     "field_name": "run_benchmark Command Plus Options for Smoke Run",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "bash run_benchmark.sh --smoke --validate --kernel-version 7.0.0 --driver-version 31.60.0 --rocm-version 10.1.0 --required-packages amdrocm10.1,rocm-smi --permissions-check true --output-format csv"
+    "value": "bash run_benchmark.sh --smoke --validate --kernel-version 7.0.0 --driver-version 7.1.9 --rocm-version 10.1.0 --required-packages amdrocm-base10.1,amdrocm-amdsmi10.1 --permissions-check true --output-format csv"
   },
   {
     "field_name": "run_benchmark Command Plus Options for Baseline Run",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "bash run_benchmark.sh --baseline --validate --kernel-version 7.0.0 --driver-version 31.60.0 --rocm-version 10.1.0 --required-packages amdrocm10.1,rocm-smi --permissions-check true --output-format csv"
+    "value": "bash run_benchmark.sh --baseline --validate --kernel-version 7.0.0 --driver-version 7.1.9 --rocm-version 10.1.0 --required-packages amdrocm-base10.1,amdrocm-amdsmi10.1 --permissions-check true --output-format csv"
   },
   {
     "field_name": "run_benchmark Command Plus Options for Extended Run",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "bash run_benchmark.sh --extended --validate --kernel-version 7.0.0 --driver-version 31.60.0 --rocm-version 10.1.0 --required-packages amdrocm10.1,rocm-smi --permissions-check true --output-format csv"
+    "value": "bash run_benchmark.sh --extended --validate --kernel-version 7.0.0 --driver-version 7.1.9 --rocm-version 10.1.0 --required-packages amdrocm-base10.1,amdrocm-amdsmi10.1 --permissions-check true --output-format csv"
   },
   {
     "field_name": "Output Fields / Metrics to Parse",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "rocm_package_mismatch_count, kernel_driver_mismatch_count, kernel_mismatch_count, driver_mismatch_count, driver_version_available, driver_compliance_percent, permission_error_count"
+    "value": "rocm_package_mismatch_count, kernel_release_mismatch_count, kernel_mismatch_count, driver_mismatch_count, driver_version_available, driver_compliance_percent, permission_error_count"
   },
   {
     "field_name": "Success Criteria",
@@ -142,7 +142,7 @@
   {
     "field_name": "Framework",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS"
+    "value": "Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS"
   },
   {
     "field_name": "Kernel Version",
@@ -152,7 +152,7 @@
   {
     "field_name": "Runtime Language",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Python, C++ (rocminfo, rocm-smi, amd-smi, hipcc)"
+    "value": "Python, C++ (rocminfo, amd-smi, hipcc)"
   },
   {
     "field_name": "Container Base Image",
@@ -162,7 +162,7 @@
   {
     "field_name": "Python Version",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only"
+    "value": "Python 3.14.8 (uv-managed CPython from `uv python install 3.14`; all benchmark venvs; same build as 24.04). System Python 3.14.4 retained for OS and setup scripts only"
   },
   {
     "field_name": "GPU Runtime Version (was ROCm Version)",
@@ -217,7 +217,7 @@
   {
     "field_name": "g++ Version",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "N/A - CMake not used"
+    "value": "N/A - g++ not used"
   },
   {
     "field_name": "Known Runtime Constraints (<=35 Words Each)",
@@ -362,17 +362,17 @@
   {
     "field_name": "Schema Last Updated",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "2026-09-05"
+    "value": "2026-10-17"
   },
   {
     "field_name": "Installation and Execution Summary",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance"
+    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance"
   },
   {
     "field_name": "Workload Command Line Executable",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
+    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
   },
   {
     "field_name": "ROCm Version",
@@ -387,7 +387,7 @@
   {
     "field_name": "Execution Summary (Run and Measure)",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance"
+    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance"
   },
   {
     "field_name": "nVidia Porting Instructions (Reference Only)",
@@ -407,7 +407,7 @@
   {
     "field_name": "Profile Parameter Values",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Parameters_SmokeBaselineExtend",
-    "value": "{\"kernel_version\": {\"smoke\": \"7.0.0\", \"baseline\": \"7.0.0\", \"extended\": \"7.0.0\", \"notes\": \"best-effort: no duration knob; baseline 1s class, 3-4 min not reachable\"}, \"driver_version\": {\"smoke\": \"31.60.0\", \"baseline\": \"31.60.0\", \"extended\": \"31.60.0\", \"notes\": \"\"}, \"rocm_version\": {\"smoke\": \"10.1.0\", \"baseline\": \"10.1.0\", \"extended\": \"10.1.0\", \"notes\": \"\"}, \"required_packages\": {\"smoke\": \"amdrocm10.1,rocm-smi\", \"baseline\": \"amdrocm10.1,rocm-smi\", \"extended\": \"amdrocm10.1,rocm-smi\", \"notes\": \"Sweep/list value. Command column documents it; omit this flag so yaml expands cases.\"}, \"permissions_check\": {\"smoke\": \"true\", \"baseline\": \"true\", \"extended\": \"true\", \"notes\": \"\"}, \"output_format\": {\"smoke\": \"csv\", \"baseline\": \"csv\", \"extended\": \"csv\", \"notes\": \"\"}}"
+    "value": "{\"kernel_version\": {\"smoke\": \"7.0.0\", \"baseline\": \"7.0.0\", \"extended\": \"7.0.0\", \"notes\": \"best-effort: no duration knob; baseline 1s class, 3-4 min not reachable\"}, \"driver_version\": {\"smoke\": \"7.1.9\", \"baseline\": \"7.1.9\", \"extended\": \"7.1.9\", \"notes\": \"\"}, \"rocm_version\": {\"smoke\": \"10.1.0\", \"baseline\": \"10.1.0\", \"extended\": \"10.1.0\", \"notes\": \"\"}, \"required_packages\": {\"smoke\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"baseline\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"extended\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"notes\": \"Sweep/list value. Command column documents it; omit this flag so yaml expands cases.\"}, \"permissions_check\": {\"smoke\": \"true\", \"baseline\": \"true\", \"extended\": \"true\", \"notes\": \"\"}, \"output_format\": {\"smoke\": \"csv\", \"baseline\": \"csv\", \"extended\": \"csv\", \"notes\": \"\"}}"
   },
   {
     "field_name": "Profile Command Authorship",

@@ -9,17 +9,17 @@
 sweep:
   profile: smoke
   kernel_version: 7.0.0
-  driver_version: 31.60.0
+  driver_version: 7.1.9
   rocm_version: 10.1.0
-  required_packages: amdrocm10.1,rocm-smi
+  required_packages: amdrocm-base10.1,amdrocm-amdsmi10.1
   permissions_check: true
   output_format: csv
 
 thresholds:
   rocm_package_mismatch_count_min: 0
   rocm_package_mismatch_count_max: 0
-  kernel_driver_mismatch_count_min: 0
-  kernel_driver_mismatch_count_max: 0
+  kernel_release_mismatch_count_min: 0
+  kernel_release_mismatch_count_max: 0
   driver_compliance_percent_min: 100
   driver_compliance_percent_max: 100
   permission_error_count_min: 0

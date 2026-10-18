@@ -2,36 +2,36 @@
 
 ## Execution Description
 
-Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. When that field is absent, driver compliance is na (in-tree amdgpu has no version). Sweep dimensions: kernel_version, driver_version, rocm_version, required_packages, permissions_check, output_format.
+Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. Sweep dimensions: kernel_version, driver_version, rocm_version, required_packages, permissions_check, output_format.
 
 ## Parameters
 
 | Parameter | CLI Flag | Tested Values | Default | Description |
 | --- | --- | --- | --- | --- |
 | kernel_version | `--kernel-version` | smoke=7.0.0, baseline=7.0.0, extended=7.0.0 | 7.0.0 | From Parameter list; see Execution Description With Parameters. |
-| driver_version | `--driver-version` | smoke=31.60.0, baseline=31.60.0, extended=31.60.0 | 31.60.0 | From Parameter list; see Execution Description With Parameters. |
+| driver_version | `--driver-version` | smoke=7.1.9, baseline=7.1.9, extended=7.1.9 | 7.1.9 | From Parameter list; see Execution Description With Parameters. |
 | rocm_version | `--rocm-version` | smoke=10.1.0, baseline=10.1.0, extended=10.1.0 | 10.1.0 | From Parameter list; see Execution Description With Parameters. |
-| required_packages | `--required-packages` | smoke=amdrocm10.1,rocm-smi, baseline=amdrocm10.1,rocm-smi, extended=amdrocm10.1,rocm-smi | amdrocm10.1,rocm-smi | From Parameter list; see Execution Description With Parameters. |
+| required_packages | `--required-packages` | smoke=amdrocm-base10.1,amdrocm-amdsmi10.1, baseline=amdrocm-base10.1,amdrocm-amdsmi10.1, extended=amdrocm-base10.1,amdrocm-amdsmi10.1 | amdrocm-base10.1,amdrocm-amdsmi10.1 | From Parameter list; see Execution Description With Parameters. |
 | permissions_check | `--permissions-check` | smoke=true, baseline=true, extended=true | true | From Parameter list; see Execution Description With Parameters. |
 | output_format | `--output-format` | smoke=csv, baseline=csv, extended=csv | csv | From Parameter list; see Execution Description With Parameters. |
 
 ## Invocation
 
 ```bash
-Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
+Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
 ```
 
 ## Raw Output Format
 
-CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, rocm-smi.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
+CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
 
-sample_index,check_name,rocm_package_mismatch_count,kernel_driver_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
-0,rocminfo,0,0,0,0,1,100,0
+sample_index,check_name,rc,rocm_package_mismatch_count,kernel_release_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
+0,rocminfo,0,0,0,0,0,1,100,0
 
 ## Metrics
 
 - **#1: ROCm package mismatch count** — stored as `rocm_package_mismatch_count`.
-- **#2: Kernel mismatch count** — stored as `kernel_driver_mismatch_count`.
+- **#2: Kernel release mismatch count** — stored as `kernel_release_mismatch_count`.
 - **#3: Driver compliance percent** — stored as `driver_compliance_percent`.
 - **#4: Permission error count** — stored as `permission_error_count`.
 
@@ -41,12 +41,12 @@ Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: exp
 
 ## Installation and Execution Summary
 
-Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance
+Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance
 
 ## Platform Portability
 
 - **AMD (primary):** ```bash
-Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
+Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
 ```
 - **NVIDIA:** Primary target is AMD ROCm. NVIDIA notes in this section are reference only and are not the execution path.
 
@@ -78,10 +78,10 @@ BENCHMARK_DB=tests/fixtures/benchmark.db \
 
 ### Run artifact contract
 
-CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, rocm-smi.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
+CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
 
-sample_index,check_name,rocm_package_mismatch_count,kernel_driver_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
-0,rocminfo,0,0,0,0,1,100,0
+sample_index,check_name,rc,rocm_package_mismatch_count,kernel_release_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
+0,rocminfo,0,0,0,0,0,1,100,0
 
 ```bash
 bash run_benchmark.sh --help

@@ -17,7 +17,7 @@ Results are written to `results/benchmark.db` and `results/summary.json`.
 
 This workload is executed on the validation host after the repository is copied there. `setup.sh` and `run_benchmark.sh` do not open an outbound SSH session.
 
-Prerequisites: Ubuntu 26.04; AMD; Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only; root or sudo for `setup.sh`. Framework: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS. This is a host benchmark, not a laptop `pip install` project.
+Prerequisites: Ubuntu 26.04; AMD; Python 3.14.8 (uv-managed CPython from `uv python install 3.14`; all benchmark venvs; same build as 24.04). System Python 3.14.4 retained for OS and setup scripts only; root or sudo for `setup.sh`. Framework: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS. This is a host benchmark, not a laptop `pip install` project.
 
 ```mermaid
 flowchart LR
@@ -32,14 +32,14 @@ This repository is one of the 32 workloads in the AMD Ubuntu 26.04 bundle, [`bun
 apt-get update && apt-get install -y git
 git clone --recurse-submodules https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2604 /opt/benchmarks \
   && cd /opt/benchmarks \
-  && ./run.sh list \
+  && ./run_benchmark_suite.sh --list \
   && cd /opt/benchmarks/301-sys-bench-amd-rocm-stack-validation-ubu2604 \
   && bash run_benchmark.sh --profile smoke --validate \
   && cd /opt/benchmarks \
   && echo "Done: 32 workloads in /opt/benchmarks; 301-sys-bench-amd-rocm-stack-validation-ubu2604 smoke run passed. Next: ./run_benchmark_suite.sh --help"
 ```
 
-Every line in `./run.sh list` should show `ready`. The commands are joined with `&&`, so if the clone or the smoke run fails, the chain stops there, and the closing message appears only when everything succeeded. The chain ends in `/opt/benchmarks`, where the suite runner is. For more extensive testing:
+Every line in `./run_benchmark_suite.sh --list` should show `ready`; it exits with an error if any workload is not fetched. The commands are joined with `&&`, so if the clone, the list or the smoke run fails, the chain stops there, and the closing message appears only when everything succeeded. The chain ends in `/opt/benchmarks`, where the suite runner is. For more extensive testing:
 
 ```bash
 ./run_benchmark_suite.sh -p smoke                 # smoke test of all 32 workloads
@@ -73,8 +73,8 @@ Three operator scripts from [`garys-gpu-benchmarks/gpu-bench-suite`](https://git
 - **`get_remote_info.sh`** (on your laptop; Git Bash on Windows) — over one SSH connection, copies the runtime ledger and every workload's `results/raw`, `results/parsed` and suite logs into `RUNTIME_LEDGERS/` and `DIRECTORIES/`.
   ```bash
   git clone https://github.com/garys-gpu-benchmarks/gpu-bench-suite && cd gpu-bench-suite
-  ./scripts/get_remote_info.sh 203.0.113.10                     # root@host, port 22
-  ./scripts/get_remote_info.sh -i ~/.ssh/id_ed25519 -o ~/results ubuntu@203.0.113.10 2222
+  ./scripts/get_remote_info.sh --host 203.0.113.10              # root@host, port 22
+  ./scripts/get_remote_info.sh --host ubuntu@203.0.113.10 --port 2222 -i ~/.ssh/id_ed25519 -o ~/results
   ```
 - **`show_metrics.sh`** (laptop or GPU host) — prints one workload's runs from the runtime ledger in fixed-width metric columns with per-profile means. On the GPU host it is `/opt/benchmarks/show_metrics.sh`.
   ```bash
@@ -85,20 +85,20 @@ Three operator scripts from [`garys-gpu-benchmarks/gpu-bench-suite`](https://git
 
 ## 1. Overview
 
-Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. When that field is absent, driver compliance is na (in-tree amdgpu has no version). Sweep dimensions: kernel_version, driver_version, rocm_version, required_packages, permissions_check, output_format.
+Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. Sweep dimensions: kernel_version, driver_version, rocm_version, required_packages, permissions_check, output_format.
 
 ## 2. What It Validates
 
 - Validates ROCm tool presence, kernel release match, driver compliance when amdgpu has a version, package presence, and GPU device-node permissions. Does not run DCGM
 - #1: ROCm package mismatch count (rocm_package_mismatch_count); is present and physically sensible.
-- #2: Kernel mismatch count (kernel_driver_mismatch_count); is present and physically sensible.
+- #2: Kernel release mismatch count (kernel_release_mismatch_count); is present and physically sensible.
 - #3: Driver compliance percent (driver_compliance_percent); is present and physically sensible.
 - #4: Permission error count (permission_error_count) is present and physically sensible.
 
 ## 3. Metrics Captured
 
 - **#1: ROCm package mismatch count** — stored as `rocm_package_mismatch_count`.
-- **#2: Kernel mismatch count** — stored as `kernel_driver_mismatch_count`.
+- **#2: Kernel release mismatch count** — stored as `kernel_release_mismatch_count`.
 - **#3: Driver compliance percent** — stored as `driver_compliance_percent`.
 - **#4: Permission error count** — stored as `permission_error_count`.
 
@@ -108,8 +108,8 @@ Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: exp
 
 - OS: Ubuntu 26.04
 - GPU vendor: AMD
-- Framework family: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS
-- Python: Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only
+- Framework family: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS
+- Python: Python 3.14.8 (uv-managed CPython from `uv python install 3.14`; all benchmark venvs; same build as 24.04). System Python 3.14.4 retained for OS and setup scripts only
 
 ### Reference validation environment
 
@@ -117,11 +117,11 @@ The tables below describe the machine used to generate the reference results. Th
 
 ### System
 
-Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS
+Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS
 
 ### GPU
 
-Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd-smi, HIP/hipcc, RVS
+Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS
 
 ## 5. Software Requirements
 
@@ -129,7 +129,7 @@ Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, rocm-smi, amd
 |---|---|
 | OS | Ubuntu 26.04 |
 | Kernel | kernel 7.0.0 |
-| Python | Python 3.14.N (uv-managed; all benchmark venvs; same build as 24.04). System python3.14 retained for OS and setup scripts only |
+| Python | Python 3.14.8 (uv-managed CPython from `uv python install 3.14`; all benchmark venvs; same build as 24.04). System Python 3.14.4 retained for OS and setup scripts only |
 | ROCm | ROCm 10.1.0 |
 | rocBLAS | N/A - rocBLAS not used |
 
@@ -138,13 +138,13 @@ Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: exp
 ## 6. Installation
 
 ```bash
-Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
+Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
 ```
 
 ## 7. Running the Benchmark
 
 ```bash
-Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
+Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
 ```
 
 **Validating results separately:**
@@ -160,13 +160,13 @@ source ".venv/bin/activate"
 
 ### `results/benchmark.db` (SQLite)
 
-CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, rocm-smi.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
+CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
 
-sample_index,check_name,rocm_package_mismatch_count,kernel_driver_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
-0,rocminfo,0,0,0,0,1,100,0
+sample_index,check_name,rc,rocm_package_mismatch_count,kernel_release_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
+0,rocminfo,0,0,0,0,0,1,100,0
 
 ```bash
-Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
+Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
 ```
 
 ### `results/summary.json`
@@ -175,10 +175,10 @@ Consolidated metrics from the most recent run — suitable for CI artifact uploa
 
 ### `results/raw/<timestamp>.txt`
 
-CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, rocm-smi.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
+CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
 
-sample_index,check_name,rocm_package_mismatch_count,kernel_driver_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
-0,rocminfo,0,0,0,0,1,100,0
+sample_index,check_name,rc,rocm_package_mismatch_count,kernel_release_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
+0,rocminfo,0,0,0,0,0,1,100,0
 
 ## 9. Baselines / Thresholds
 

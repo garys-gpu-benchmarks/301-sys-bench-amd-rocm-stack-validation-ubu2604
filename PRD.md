@@ -15,7 +15,7 @@ This PRD.md section is populated from benchmark_specification.json, which is the
 System Config Verification
 
 ## Execution Summary (Run and Measure)
-Run rvs --version, rocminfo, rocm-smi, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance
+Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query, then compare package presence, the kernel release, driver compliance when amdgpu has a version, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, to measure ROCm stack compliance
 
 ## Main Goal
 Analyze ROCm software stack consistency against yaml expectations
