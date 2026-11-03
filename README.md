@@ -85,7 +85,7 @@ Three operator scripts from [`garys-gpu-benchmarks/gpu-bench-suite`](https://git
 
 ## 1. Overview
 
-Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. Sweep dimensions: kernel_version, driver_version, rocm_version, required_packages, permissions_check, output_format.
+Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. Sweep dimensions: kernel_version, required_packages, permissions_check, driver_version, rocm_version.
 
 ## 2. What It Validates
 

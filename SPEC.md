@@ -2,18 +2,17 @@
 
 ## Execution Description
 
-Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. Sweep dimensions: kernel_version, driver_version, rocm_version, required_packages, permissions_check, output_format.
+Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. Sweep dimensions: kernel_version, required_packages, permissions_check, driver_version, rocm_version.
 
 ## Parameters
 
 | Parameter | CLI Flag | Tested Values | Default | Description |
 | --- | --- | --- | --- | --- |
 | kernel_version | `--kernel-version` | smoke=7.0.0, baseline=7.0.0, extended=7.0.0 | 7.0.0 | From Parameter list; see Execution Description With Parameters. |
-| driver_version | `--driver-version` | smoke=7.1.9, baseline=7.1.9, extended=7.1.9 | 7.1.9 | From Parameter list; see Execution Description With Parameters. |
-| rocm_version | `--rocm-version` | smoke=10.1.0, baseline=10.1.0, extended=10.1.0 | 10.1.0 | From Parameter list; see Execution Description With Parameters. |
 | required_packages | `--required-packages` | smoke=amdrocm-base10.1,amdrocm-amdsmi10.1, baseline=amdrocm-base10.1,amdrocm-amdsmi10.1, extended=amdrocm-base10.1,amdrocm-amdsmi10.1 | amdrocm-base10.1,amdrocm-amdsmi10.1 | From Parameter list; see Execution Description With Parameters. |
 | permissions_check | `--permissions-check` | smoke=true, baseline=true, extended=true | true | From Parameter list; see Execution Description With Parameters. |
-| output_format | `--output-format` | smoke=csv, baseline=csv, extended=csv | csv | From Parameter list; see Execution Description With Parameters. |
+| driver_version | `--driver-version` | smoke=7.1.9, baseline=7.1.9, extended=7.1.9 | 7.1.9 | From Parameter list; see Execution Description With Parameters. |
+| rocm_version | `--rocm-version` | smoke=10.1.0, baseline=10.1.0, extended=10.1.0 | 10.1.0 | From Parameter list; see Execution Description With Parameters. |
 
 ## Invocation
 

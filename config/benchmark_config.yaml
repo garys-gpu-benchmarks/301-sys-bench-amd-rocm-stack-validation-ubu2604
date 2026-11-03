@@ -9,11 +9,10 @@
 sweep:
   profile: smoke
   kernel_version: 7.0.0
-  driver_version: 7.1.9
-  rocm_version: 10.1.0
   required_packages: amdrocm-base10.1,amdrocm-amdsmi10.1
   permissions_check: true
-  output_format: csv
+  driver_version: 7.1.9
+  rocm_version: 10.1.0
 
 thresholds:
   rocm_package_mismatch_count_min: 0

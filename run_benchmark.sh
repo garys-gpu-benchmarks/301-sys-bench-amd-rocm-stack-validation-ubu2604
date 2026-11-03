@@ -46,11 +46,10 @@ Validation and logging:
 
 Workload options:
   --kernel-version <value>            Override kernel_version
-  --driver-version <value>            Override driver_version
-  --rocm-version <value>            Override rocm_version
   --required-packages <value>            Override required_packages
   --permissions-check <value>            Override permissions_check
-  --output-format <value>            Override output_format
+  --driver-version <value>            Override driver_version
+  --rocm-version <value>            Override rocm_version
 
 Information:
   --specification               Print this workload's specification and exit
@@ -85,11 +84,10 @@ LOG_LEVEL_VALUE="INFO"
 OUTPUT_FORMAT=""
 SAVE_OPTIONS_FILE=""
 KERNEL_VERSION=""
-DRIVER_VERSION=""
-ROCM_VERSION=""
 REQUIRED_PACKAGES=""
 PERMISSIONS_CHECK=""
-OUTPUT_FORMAT=""
+DRIVER_VERSION=""
+ROCM_VERSION=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -111,11 +109,10 @@ while [[ $# -gt 0 ]]; do
     --output-format) OUTPUT_FORMAT="${2:-}"; shift 2 ;;
     --save-options-file) SAVE_OPTIONS_FILE="${2:-}"; shift 2 ;;
     --kernel-version) KERNEL_VERSION="${2:-}"; shift 2 ;;
-    --driver-version) DRIVER_VERSION="${2:-}"; shift 2 ;;
-    --rocm-version) ROCM_VERSION="${2:-}"; shift 2 ;;
     --required-packages) REQUIRED_PACKAGES="${2:-}"; shift 2 ;;
     --permissions-check) PERMISSIONS_CHECK="${2:-}"; shift 2 ;;
-    --output-format) OUTPUT_FORMAT="${2:-}"; shift 2 ;;
+    --driver-version) DRIVER_VERSION="${2:-}"; shift 2 ;;
+    --rocm-version) ROCM_VERSION="${2:-}"; shift 2 ;;
     --help|--specification|--matrix-definition) shift ;;
     *) die "Unknown option: $1" ;;
   esac
@@ -155,22 +152,20 @@ PY
 }
 
 KERNEL_VERSION="${KERNEL_VERSION:-$(yaml_get kernel_version)}"
-DRIVER_VERSION="${DRIVER_VERSION:-$(yaml_get driver_version)}"
-ROCM_VERSION="${ROCM_VERSION:-$(yaml_get rocm_version)}"
 REQUIRED_PACKAGES="${REQUIRED_PACKAGES:-$(yaml_get required_packages)}"
 PERMISSIONS_CHECK="${PERMISSIONS_CHECK:-$(yaml_get permissions_check)}"
-OUTPUT_FORMAT="${OUTPUT_FORMAT:-$(yaml_get output_format)}"
+DRIVER_VERSION="${DRIVER_VERSION:-$(yaml_get driver_version)}"
+ROCM_VERSION="${ROCM_VERSION:-$(yaml_get rocm_version)}"
 OUTPUT_FORMAT="${OUTPUT_FORMAT:-$(yaml_get output_format)}"
 OUTPUT_FORMAT="${OUTPUT_FORMAT:-csv}"
 
 BENCHMARK_RUN_COMMAND="bash run_benchmark.sh --${PROFILE}"
 [[ "${VALIDATE}" -eq 1 ]] && BENCHMARK_RUN_COMMAND+=" --validate"
 [[ -n "${KERNEL_VERSION}" ]] && BENCHMARK_RUN_COMMAND+=" --kernel-version $(printf %q "${KERNEL_VERSION}")"
-[[ -n "${DRIVER_VERSION}" ]] && BENCHMARK_RUN_COMMAND+=" --driver-version $(printf %q "${DRIVER_VERSION}")"
-[[ -n "${ROCM_VERSION}" ]] && BENCHMARK_RUN_COMMAND+=" --rocm-version $(printf %q "${ROCM_VERSION}")"
 [[ -n "${REQUIRED_PACKAGES}" ]] && BENCHMARK_RUN_COMMAND+=" --required-packages $(printf %q "${REQUIRED_PACKAGES}")"
 [[ -n "${PERMISSIONS_CHECK}" ]] && BENCHMARK_RUN_COMMAND+=" --permissions-check $(printf %q "${PERMISSIONS_CHECK}")"
-[[ -n "${OUTPUT_FORMAT}" ]] && BENCHMARK_RUN_COMMAND+=" --output-format $(printf %q "${OUTPUT_FORMAT}")"
+[[ -n "${DRIVER_VERSION}" ]] && BENCHMARK_RUN_COMMAND+=" --driver-version $(printf %q "${DRIVER_VERSION}")"
+[[ -n "${ROCM_VERSION}" ]] && BENCHMARK_RUN_COMMAND+=" --rocm-version $(printf %q "${ROCM_VERSION}")"
 set_benchmark_run_command "${BENCHMARK_RUN_COMMAND}"
 
 HOSTNAME_VALUE="$(hostname -s 2>/dev/null || hostname)"
@@ -214,11 +209,10 @@ run_collection() {
   fi
   grep -q -- '--output-format' <<<"${help}" && collect_args+=(--output-format "${OUTPUT_FORMAT}")
   grep -q -- '--kernel-version' <<<"${help}" && collect_args+=(--kernel-version "${KERNEL_VERSION}")
-  grep -q -- '--driver-version' <<<"${help}" && collect_args+=(--driver-version "${DRIVER_VERSION}")
-  grep -q -- '--rocm-version' <<<"${help}" && collect_args+=(--rocm-version "${ROCM_VERSION}")
   grep -q -- '--required-packages' <<<"${help}" && collect_args+=(--required-packages "${REQUIRED_PACKAGES}")
   grep -q -- '--permissions-check' <<<"${help}" && collect_args+=(--permissions-check "${PERMISSIONS_CHECK}")
-  grep -q -- '--output-format' <<<"${help}" && collect_args+=(--output-format "${OUTPUT_FORMAT}")
+  grep -q -- '--driver-version' <<<"${help}" && collect_args+=(--driver-version "${DRIVER_VERSION}")
+  grep -q -- '--rocm-version' <<<"${help}" && collect_args+=(--rocm-version "${ROCM_VERSION}")
 
   printf -v collect_cmd '%q ' "${PYTHON_BIN}" scripts/collect_workload.py "${collect_args[@]}"
   echo "[RUN] ${collect_cmd}"
