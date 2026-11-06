@@ -3,9 +3,11 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/garys-gpu-benchmarks/301-sys-bench-amd-rocm-stack-validation-ubu2604/actions/workflows/ci.yml/badge.svg)](https://github.com/garys-gpu-benchmarks/301-sys-bench-amd-rocm-stack-validation-ubu2604/actions/workflows/ci.yml)
 
-Target: Ubuntu 26.04 · AMD · see Hardware Requirements. This is a host benchmark, not a laptop `pip install` project.
+Analyzes ROCm software stack consistency against yaml expectations. Workload 301 of the AMD Ubuntu 26.04 bundle.
 
 ## Quick Start
+
+On an Ubuntu 26.04 host, as root or with sudo:
 
 ```bash
 git clone https://github.com/garys-gpu-benchmarks/301-sys-bench-amd-rocm-stack-validation-ubu2604.git
@@ -13,223 +15,103 @@ cd 301-sys-bench-amd-rocm-stack-validation-ubu2604
 sudo bash setup.sh --assume-yes
 bash run_benchmark.sh --smoke
 ```
-Results are written to `results/benchmark.db` and `results/summary.json`.
 
-This workload is executed on the validation host after the repository is copied there. `setup.sh` and `run_benchmark.sh` do not open an outbound SSH session.
+`run_benchmark.sh` runs setup by itself if it has not been run yet. Each run prints its metrics when it finishes.
 
-Prerequisites: Ubuntu 26.04; AMD; Python 3.14.8 (uv-managed CPython from `uv python install 3.14`; all benchmark venvs; same build as 24.04). System Python 3.14.4 retained for OS and setup scripts only; root or sudo for `setup.sh`. Framework: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS. This is a host benchmark, not a laptop `pip install` project.
+## Profiles and Parameters
 
-```mermaid
-flowchart LR
-  setup.sh --> run_benchmark.sh --> parse_results.py --> results/benchmark.db
-```
+| Parameter | Flag | smoke | baseline | extended |
+|---|---|---|---|---|
+| `kernel_version` | `--kernel-version` | 7.0.0 | 7.0.0 | 7.0.0 |
+| `required_packages` | `--required-packages` | amdrocm-base10.1,amdrocm-amdsmi10.1 | amdrocm-base10.1,amdrocm-amdsmi10.1 | amdrocm-base10.1,amdrocm-amdsmi10.1 |
+| `permissions_check` | `--permissions-check` | true | true | true |
+| `driver_version` | `--driver-version` | 7.1.9 | 7.1.9 | 7.1.9 |
+| `rocm_version` | `--rocm-version` | 10.1.0 | 10.1.0 | 10.1.0 |
 
-## Download as a Bundle
-
-This repository is one of the 32 workloads in the AMD Ubuntu 26.04 bundle, [`bundle-amd-ubuntu-2604`](https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2604), which holds them as git submodules pinned to a release. To put every workload for this platform on a GPU host in one step, run this as root (or put `sudo` in front of the `apt-get` and `git clone` commands):
-
-```bash
-apt-get update && apt-get install -y git
-git clone --recurse-submodules https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2604 /opt/benchmarks \
-  && cd /opt/benchmarks \
-  && ./run_benchmark_suite.sh --list \
-  && cd /opt/benchmarks/301-sys-bench-amd-rocm-stack-validation-ubu2604 \
-  && bash run_benchmark.sh --smoke \
-  && cd /opt/benchmarks \
-  && echo "Done: 32 workloads in /opt/benchmarks; 301-sys-bench-amd-rocm-stack-validation-ubu2604 smoke run passed. Next: ./run_benchmark_suite.sh --help"
-```
-
-Every line in `./run_benchmark_suite.sh --list` should show `ready`; it exits with an error if any workload is not fetched. The commands are joined with `&&`, so if the clone, the list or the smoke run fails, the chain stops there, and the closing message appears only when everything succeeded. The chain ends in `/opt/benchmarks`, where the suite runner is. For more extensive testing:
+Pick a profile with `--smoke` (default), `--baseline` or `--extended`. Any flag in the table overrides that profile's value:
 
 ```bash
-./run_benchmark_suite.sh --smoke                  # smoke test of all 32 workloads
-./run_benchmark_suite.sh -w 307 --baseline        # workload 307, baseline profile
-./run_benchmark_suite.sh --help                   # all options
+bash run_benchmark.sh --baseline --permissions-check false
+bash run_benchmark.sh --help        # every option
 ```
 
-A workload that is not set up yet sets itself up on its first run (its `run_benchmark.sh` calls `scripts/ensure_setup.sh`). See [Suite Tools](#suite-tools) for more.
+Profile values live in `config/benchmark_config.yaml`.
 
-To move to the newest published release later: `cd /opt/benchmarks && git pull && git submodule update --init --recursive`.
+## Metrics
 
-| Bundle repository | Platform | Workloads |
+| # | Metric | Key |
 |---|---|---|
-| [`bundle-amd-ubuntu-2404`](https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2404) | AMD · Ubuntu 24.04 | 101–132 |
-| [`bundle-nvidia-ubuntu-2404`](https://github.com/garys-gpu-benchmarks/bundle-nvidia-ubuntu-2404) | NVIDIA · Ubuntu 24.04 | 201–232 |
-| [`bundle-amd-ubuntu-2604`](https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2604) | AMD · Ubuntu 26.04 | 301–332 |
-| [`bundle-nvidia-ubuntu-2604`](https://github.com/garys-gpu-benchmarks/bundle-nvidia-ubuntu-2604) | NVIDIA · Ubuntu 26.04 | 401–432 |
+| 1 | ROCm package mismatch count | `rocm_package_mismatch_count` |
+| 2 | Kernel release mismatch count | `kernel_release_mismatch_count` |
+| 3 | Driver compliance percent | `driver_compliance_percent` |
+| 4 | Permission error count | `permission_error_count` |
 
-## Suite Tools
+### Notes
 
-Four operator scripts from [`garys-gpu-benchmarks/gpu-bench-suite`](https://github.com/garys-gpu-benchmarks/gpu-bench-suite) work across the whole bundle. All four are also at the top of every bundle, and `show_metrics.sh` is at the top of this repository too; each script prints full usage with `--help`.
+- The smoke profile is a quick check with reduced sizes and iteration counts. Use `--baseline` or `--extended` for representative numbers.
+- ROCm tools and /dev/kfd must be present.
+- Exact rocm_version string compare is not performed.
+- DCGM is not invoked.
 
-- **`run_benchmark_suite.sh`** (on the GPU host) — runs the installed workloads one after another for each profile, writes one log to `/opt/benchmarks/benchmark_suite_log/`, and ends with a pass/fail summary.
-  ```bash
-  cd /opt/benchmarks
-  ./run_benchmark_suite.sh --dry-run                    # list what would run
-  ./run_benchmark_suite.sh -w 301 --smoke --baseline  # just this workload
-  ./run_benchmark_suite.sh --smoke                      # every workload, smoke profile
-  ./run_benchmark_suite.sh -r 20                        # soak: everything, 20 times
-  ```
-- **`get_benchmark_results.sh`** (on your laptop with `--host`, or on the GPU host without it) — copies the runtime ledger and every workload's `results/raw`, `results/parsed` and suite logs into `RUNTIME_LEDGERS/` and `DIRECTORIES/`. With `--host` it collects over one SSH connection; without `--host` it collects from the machine it runs on.
-  ```bash
-  git clone https://github.com/garys-gpu-benchmarks/gpu-bench-suite && cd gpu-bench-suite
-  ./scripts/get_benchmark_results.sh --host 203.0.113.10        # root@host, port 22
-  ./scripts/get_benchmark_results.sh --host ubuntu@203.0.113.10 --port 2222 -i ~/.ssh/id_ed25519 -o ~/results
-  /opt/benchmarks/get_benchmark_results.sh -o ~/results     # on the GPU host: this machine
-  ```
-- **`show_ledger_runs.sh`** (on your laptop with `--host`, or on the GPU host without it) — prints one line per run in the runtime ledger (workload, profile, runtime, exit code) and copies nothing. `--failed` lists only runs that did not exit 0.
-  ```bash
-  ./scripts/show_ledger_runs.sh --host 203.0.113.10           # from your laptop
-  /opt/benchmarks/show_ledger_runs.sh --failed            # on the GPU host
-  ```
-- **`show_metrics.sh`** (laptop or GPU host; included in this repository) — prints one workload's runs from the runtime ledger in fixed-width metric columns with per-profile means.
-  ```bash
-  ./show_metrics.sh 301                                        # from this repository, on the GPU host
-  cd /opt/benchmarks && ./show_metrics.sh 301             # or from the bundle
-  ./scripts/show_metrics.sh 301 --host 203.0.113.10            # over SSH, all profiles
-  ./scripts/show_metrics.sh 301 --baseline --file RUNTIME_LEDGERS/<ledger>.csv
-  ```
+## Output
 
-## 1. Overview
-
-Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. Sweep dimensions: kernel_version, required_packages, permissions_check, driver_version, rocm_version.
-
-## 2. What It Validates
-
-- Validates ROCm tool presence, kernel release match, driver compliance when amdgpu has a version, package presence, and GPU device-node permissions. Does not run DCGM
-- #1: ROCm package mismatch count (rocm_package_mismatch_count); is present and physically sensible.
-- #2: Kernel release mismatch count (kernel_release_mismatch_count); is present and physically sensible.
-- #3: Driver compliance percent (driver_compliance_percent); is present and physically sensible.
-- #4: Permission error count (permission_error_count) is present and physically sensible.
-
-## 3. Metrics Captured
-
-- **#1: ROCm package mismatch count** — stored as `rocm_package_mismatch_count`.
-- **#2: Kernel release mismatch count** — stored as `kernel_release_mismatch_count`.
-- **#3: Driver compliance percent** — stored as `driver_compliance_percent`.
-- **#4: Permission error count** — stored as `permission_error_count`.
-
-## 4. Hardware Requirements
-
-### Supported environment
-
-- OS: Ubuntu 26.04
-- GPU vendor: AMD
-- Framework family: Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS
-- Python: Python 3.14.8 (uv-managed CPython from `uv python install 3.14`; all benchmark venvs; same build as 24.04). System Python 3.14.4 retained for OS and setup scripts only
-
-### Reference validation environment
-
-The tables below describe the machine used to generate the reference results. They are not a requirement that every user buy that exact cloud instance.
-
-### System
-
-Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS
-
-### GPU
-
-Ubuntu 26.04 / AMD / Bash, SQLite, Python, PyYAML, ROCm, rocminfo, amd-smi, HIP/hipcc, RVS
-
-## 5. Software Requirements
-
-| Component | Version |
+| Path | Contents |
 |---|---|
-| OS | Ubuntu 26.04 |
-| Kernel | kernel 7.0.0 |
-| Python | Python 3.14.8 (uv-managed CPython from `uv python install 3.14`; all benchmark venvs; same build as 24.04). System Python 3.14.4 retained for OS and setup scripts only |
-| ROCm | ROCm 10.1.0 |
-| rocBLAS | N/A - rocBLAS not used |
+| `results/raw/<timestamp>_<repo>_<host>/` | Raw tool output, `metrics_summary.txt`, and `hardware_info.txt`, `software_info.txt`, `errors_info.txt` |
+| `results/benchmark.db` | SQLite history of every run |
+| `results/summary.json` | Metrics from the most recent run |
+| `/var/opt/benchmarks/runtime_ledger.csv` | One row per run, shared by every workload on the host |
 
-Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance.
+Every run is checked for completeness and against any `thresholds:` or `baselines:` in `config/benchmark_config.yaml`. A run that fails the checks exits non-zero.
 
-## 6. Installation
+## Requirements
 
-```bash
-Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
-```
+- Ubuntu 26.04, root or sudo for `setup.sh`
+- AMD GPU with ROCm 10.1.0 (validated on MI300X)
+- ROCm, rocminfo, amd-smi, HIP/hipcc, RVS, Python 3.14 (uv-managed). `setup.sh` installs what is missing; Python packages go into a repo-local `.venv`.
 
-## 7. Running the Benchmark
+## Run the Whole Bundle
 
-```bash
-Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
-```
-
-**Validating results separately:**
+This workload is also part of [`bundle-amd-ubuntu-2604`](https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2604), which holds all 32 AMD Ubuntu 26.04 workloads as submodules:
 
 ```bash
-export BENCHMARK_PYTHON=/usr/bin/python3.13  # optional
-python3 -m venv .venv
-source ".venv/bin/activate"
-".venv/bin/python" scripts/validate_results.py
+git clone --recurse-submodules https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2604 /opt/benchmarks
+cd /opt/benchmarks
+./run_benchmark_suite.sh -w 301 --smoke     # just this workload
+./run_benchmark_suite.sh --smoke            # all 32 workloads
+./show_metrics.sh 301                       # this workload's runs from the ledger
 ```
 
-## 8. Output
+The suite tools (`run_benchmark_suite.sh`, `get_benchmark_results.sh`, `show_ledger_runs.sh`, `show_metrics.sh`) are documented in [`gpu-bench-suite`](https://github.com/garys-gpu-benchmarks/gpu-bench-suite).
 
-### `results/benchmark.db` (SQLite)
+Other platforms: [AMD 24.04](https://github.com/garys-gpu-benchmarks/bundle-amd-ubuntu-2404) (101–132), [NVIDIA 24.04](https://github.com/garys-gpu-benchmarks/bundle-nvidia-ubuntu-2404) (201–232), [NVIDIA 26.04](https://github.com/garys-gpu-benchmarks/bundle-nvidia-ubuntu-2604) (401–432).
 
-CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
+## Troubleshooting
 
-sample_index,check_name,rc,rocm_package_mismatch_count,kernel_release_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
-0,rocminfo,0,0,0,0,0,1,100,0
+- **The SSH session closed during setup:** the first AMD workload on a fresh host may reboot once to load the AMD GPU driver. Setup prints a 30-second warning first and resumes by itself after boot. SSH back in and run `tail -f results/reboot_resume.log`; when it prints `SETUP COMPLETE`, run your command again. Do not start `setup.sh` again while it is resuming.
+- **SSH dropped for another reason:** reconnect and run `sudo bash setup.sh --assume-yes` again. It resumes; do not delete `.venv` or `.cache`.
+- **A metric reads `na`:** the run could not measure it on this host. The reason is in the run's `metrics_summary.txt` and `errors_info.txt`; see also [Notes](#notes).
 
-```bash
-Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query
-```
-
-### `results/summary.json`
-
-Consolidated metrics from the most recent run — suitable for CI artifact upload or dashboard ingestion.
-
-### `results/raw/<timestamp>.txt`
-
-CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)
-
-sample_index,check_name,rc,rocm_package_mismatch_count,kernel_release_mismatch_count,kernel_mismatch_count,driver_mismatch_count,driver_version_available,driver_compliance_percent,permission_error_count
-0,rocminfo,0,0,0,0,0,1,100,0
-
-## 9. Baselines / Thresholds
-
-Expected ranges and gates live in `config/benchmark_config.yaml` under `baselines:` or `thresholds:`. To update them, edit that file — never edit validation code directly.
-
-## 10. Troubleshooting
-
-**`setup.sh` missing collector**
-Create cannot finish without `scripts/collect_workload.py`.
-
-**`self_check` overlay rewritten**
-`Locked overlay rewritten` means the sibling file and the `sha256` in `results/overlay_lock.json` disagree. The repair is to make `implementation_components/<component-id>/files/<path>`, the sibling path, and that digest the same bytes, then recheck with `create_one_workload.py --validate-only`. Do not replace the overlay with a new collector, and do not regenerate a non-empty sibling.
-
-**Remote SSH drop during setup**
-Reconnect and resume `bash setup.sh --assume-yes`. Do not wipe `.venv` or `.cache`.
-
-## 11. NVIDIA H100 Coding Differences
-
-Primary target is AMD ROCm. NVIDIA notes in this section are reference only and are not the execution path.
-
-## Repository layout
+## Repository Layout
 
 ```text
 .
-├── setup.sh
-├── run_benchmark.sh
-├── benchmark_specification.json
-├── .github/workflows/      # thin CI callers (see Continuous Integration)
-├── config/
-├── scripts/
-├── src/
+├── setup.sh                      # installs dependencies and builds the benchmark
+├── run_benchmark.sh              # runs one profile, parses, validates
+├── show_metrics.sh               # prints this workload's ledger rows
+├── SPEC.md                       # engineering specification
+├── benchmark_specification.json  # workload definition
+├── config/                       # profile values and thresholds
+├── scripts/                      # build, collect, parse, validate
+├── docs/                         # PRD and contracts
 ├── tests/
-├── docs/
-├── results/
+├── results/                      # run outputs
 └── LICENSE
 ```
 
 ## Continuous Integration
 
-| Workflow | Runs on | When | What it does |
-|---|---|---|---|
-| [CI](.github/workflows/ci.yml) | GitHub-hosted runner | every pull request, and every push to `main` | shellcheck, ruff, `bash -n`, `compileall`, `run_benchmark.sh --help`, specification schema, the results validator on a seeded fixture, required files, and actionlint. No GPU and no benchmark run. |
-| [GPU Smoke Benchmark](.github/workflows/gpu-smoke.yml) | self-hosted runner labeled `gpu`, `amd`, `ubu2604` | only when started by hand: **Actions → GPU Smoke Benchmark → Run workflow** (choose `smoke`, `baseline` or `extended`) | Verifies the pre-provisioned GPU stack, records `results/environment.json` (driver, runtime, kernel, GPU), runs the profile, shows headline metrics on the run page, and uploads the results. |
+- [CI](.github/workflows/ci.yml) runs lint and static checks on every pull request and push to `main`. It does not run the benchmark.
+- [GPU Smoke Benchmark](.github/workflows/gpu-smoke.yml) runs a profile on a self-hosted runner labeled `gpu`, `amd`, `ubu2604`. It only starts by hand (**Actions → GPU Smoke Benchmark → Run workflow**), so pull requests and forks cannot run it.
 
-Both files are short callers. The steps themselves live once, for every workload in the suite, in [`garys-gpu-benchmarks/shared-workflows`](https://github.com/garys-gpu-benchmarks/shared-workflows), pinned at `@v1`. The GPU workflow is never triggered by pull requests, so code from a fork cannot run on the GPU host.
-
-The GPU Smoke Benchmark workflow runs one workload. To install and run the whole AMD Ubuntu 26.04 bundle by hand on the same machines, see [Download as a Bundle](#download-as-a-bundle) and [Suite Tools](#suite-tools).
+Both workflows call shared steps in [`shared-workflows@v1`](https://github.com/garys-gpu-benchmarks/shared-workflows).
