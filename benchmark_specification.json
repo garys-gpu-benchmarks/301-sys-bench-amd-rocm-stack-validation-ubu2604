@@ -140,6 +140,16 @@
     "value": "-"
   },
   {
+    "field_name": "Validation Objective",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Validates ROCm tools, kernel match, amdgpu driver, packages, and GPU device-node permissions"
+  },
+  {
+    "field_name": "Command Tools Executed",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
+  },
+  {
     "field_name": "run_benchmark Command Plus Options for Smoke Run (One minute or less)",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "bash run_benchmark.sh --smoke --validate --kernel-version 7.0.0 --required-packages amdrocm-base10.1,amdrocm-amdsmi10.1 --permissions-check true --driver-version 7.1.9 --rocm-version 10.1.0"
@@ -153,16 +163,6 @@
     "field_name": "run_benchmark Command Plus Options for Extended Run (8 to 15 minutes)",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "bash run_benchmark.sh --extended --validate --kernel-version 7.0.0 --required-packages amdrocm-base10.1,amdrocm-amdsmi10.1 --permissions-check true --driver-version 7.1.9 --rocm-version 10.1.0"
-  },
-  {
-    "field_name": "Validation Objective",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Validates ROCm tool presence, kernel release match, driver compliance when amdgpu has a version, package presence, and GPU device-node permissions. Does not run DCGM"
-  },
-  {
-    "field_name": "Command Tools Executed",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
   },
   {
     "field_name": "Command Execution Details and Purpose",
@@ -412,7 +412,7 @@
   {
     "field_name": "Profile Parameter Values",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Parameters_SmokeBaselineExtend",
-    "value": "{\"kernel_version\": {\"smoke\": \"7.0.0\", \"baseline\": \"7.0.0\", \"extended\": \"7.0.0\", \"notes\": \"best-effort: no duration knob; baseline 1s class, 3-4 min not reachable\"}, \"required_packages\": {\"smoke\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"baseline\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"extended\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"notes\": \"Sweep/list value. Command column documents it; omit this flag so yaml expands cases.\"}, \"permissions_check\": {\"smoke\": \"true\", \"baseline\": \"true\", \"extended\": \"true\", \"notes\": \"\"}, \"driver_version\": {\"smoke\": \"7.1.9\", \"baseline\": \"7.1.9\", \"extended\": \"7.1.9\", \"notes\": \"\"}, \"rocm_version\": {\"smoke\": \"10.1.0\", \"baseline\": \"10.1.0\", \"extended\": \"10.1.0\", \"notes\": \"\"}}"
+    "value": "{\"kernel_version\": {\"smoke\": \"7.0.0\", \"baseline\": \"7.0.0\", \"extended\": \"7.0.0\"}, \"required_packages\": {\"smoke\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"baseline\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\", \"extended\": \"amdrocm-base10.1,amdrocm-amdsmi10.1\"}, \"permissions_check\": {\"smoke\": \"true\", \"baseline\": \"true\", \"extended\": \"true\"}, \"driver_version\": {\"smoke\": \"7.1.9\", \"baseline\": \"7.1.9\", \"extended\": \"7.1.9\"}, \"rocm_version\": {\"smoke\": \"10.1.0\", \"baseline\": \"10.1.0\", \"extended\": \"10.1.0\"}}"
   },
   {
     "field_name": "Profile Command Authorship",

@@ -21,7 +21,7 @@ Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo 
 Analyze ROCm software stack consistency against yaml expectations
 
 ## Validation Objective
-Validates ROCm tool presence, kernel release match, driver compliance when amdgpu has a version, package presence, and GPU device-node permissions. Does not run DCGM
+Validates ROCm tools, kernel match, amdgpu driver, packages, and GPU device-node permissions
 
 ## Workload Category
 System Validation & Reliability
