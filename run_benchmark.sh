@@ -31,7 +31,8 @@ Profiles (default: --smoke):
 
 Parameters (override the profile's value):
   --kernel-version <value>      Shared workload parameter (smoke/baseline/extended: 7.0.0)
-  --required-packages <value>   Shared workload parameter (smoke/baseline/extended: amdrocm-base10.1,amdrocm-amdsmi10.1)
+  --required-packages <value>   Shared workload parameter
+                                  all profiles: amdrocm-base10.1,amdrocm-amdsmi10.1
   --permissions-check <value>   Shared workload parameter (smoke/baseline/extended: true)
   --driver-version <value>      Shared workload parameter (smoke/baseline/extended: 7.1.9)
   --rocm-version <value>        Shared workload parameter (smoke/baseline/extended: 10.1.0)
