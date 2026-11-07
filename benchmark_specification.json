@@ -35,6 +35,11 @@
     "value": "Analyze ROCm software stack consistency against yaml expectations"
   },
   {
+    "field_name": "Command Tools Executed",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
+  },
+  {
     "field_name": "Metrics",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "#1: ROCm package mismatch count (rocm_package_mismatch_count); #2: Kernel release mismatch count (kernel_release_mismatch_count); #3: Driver compliance percent (driver_compliance_percent); #4: Permission error count (permission_error_count)"
@@ -140,16 +145,6 @@
     "value": "-"
   },
   {
-    "field_name": "Validation Objective",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Validates ROCm tools, kernel match, amdgpu driver, packages, and GPU device-node permissions"
-  },
-  {
-    "field_name": "Command Tools Executed",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
-  },
-  {
     "field_name": "run_benchmark Command Plus Options for Smoke Run (One minute or less)",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "bash run_benchmark.sh --smoke --validate --kernel-version 7.0.0 --required-packages amdrocm-base10.1,amdrocm-amdsmi10.1 --permissions-check true --driver-version 7.1.9 --rocm-version 10.1.0"
@@ -163,6 +158,11 @@
     "field_name": "run_benchmark Command Plus Options for Extended Run (8 to 15 minutes)",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "bash run_benchmark.sh --extended --validate --kernel-version 7.0.0 --required-packages amdrocm-base10.1,amdrocm-amdsmi10.1 --permissions-check true --driver-version 7.1.9 --rocm-version 10.1.0"
+  },
+  {
+    "field_name": "Validation Objective",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Validates ROCm tools, kernel match, amdgpu driver, packages, and GPU device-node permissions"
   },
   {
     "field_name": "Command Execution Details and Purpose",

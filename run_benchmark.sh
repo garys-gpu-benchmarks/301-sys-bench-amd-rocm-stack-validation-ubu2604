@@ -16,12 +16,11 @@ capture_benchmark_run_command_submitted "$@"
 
 usage() {
   cat <<'USAGE'
+
 Usage: bash run_benchmark.sh [OPTIONS]
 
 Workload Name:          System Config Verification.
 Main Goal:              Analyze ROCm software stack consistency against yaml expectations.
-Validation Objective:   Validates ROCm tools, kernel match, amdgpu driver, packages, and GPU
-                        device-node permissions.
 Command Tools Executed: Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a,
                         modinfo amdgpu, hipcc --version, and dpkg-query.
 
