@@ -19,10 +19,10 @@ usage() {
 
 Usage: bash run_benchmark.sh [OPTIONS]
 
-Workload Name:          System Config Verification.
-Main Goal:              Analyze ROCm software stack consistency against yaml expectations.
+Workload Name:          System Config Verification
+Main Goal:              Analyze ROCm software stack consistency against yaml expectations
 Command Tools Executed: Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a,
-                        modinfo amdgpu, hipcc --version, and dpkg-query.
+                        modinfo amdgpu, hipcc --version, and dpkg-query
 
 Profiles (default: --smoke):
   --smoke                       Run smoke profile

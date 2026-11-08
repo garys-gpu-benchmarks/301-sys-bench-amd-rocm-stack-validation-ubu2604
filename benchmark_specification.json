@@ -205,14 +205,14 @@
     "value": "MI300X"
   },
   {
-    "field_name": "Raw Output Format",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)"
-  },
-  {
     "field_name": "Primary Record Granularity",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "one CSV row per tool probe (seven checks)"
+  },
+  {
+    "field_name": "Raw Output Format",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "CSV with one row per tool probe, plus a transcript per command (rvs.txt, rocminfo.txt, amd-smi-version.txt, amd-smi.txt, uname.txt, modinfo.txt, hipcc.txt)"
   },
   {
     "field_name": "Raw Output Example",
@@ -225,14 +225,14 @@
     "value": "rocm_package_mismatch_count, kernel_release_mismatch_count, kernel_mismatch_count, driver_mismatch_count, driver_version_available, driver_compliance_percent, permission_error_count"
   },
   {
-    "field_name": "Success Criteria",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "parser stores the seven check rows and validation accepts the configured mismatch/compliance gates"
-  },
-  {
     "field_name": "Parser and Normalization Notes",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "CSV header names are authoritative. Profile flags do not change which seven tools run"
+  },
+  {
+    "field_name": "Success Criteria",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "parser stores the seven check rows and validation accepts the configured mismatch/compliance gates"
   },
   {
     "field_name": "Hardware Config",
