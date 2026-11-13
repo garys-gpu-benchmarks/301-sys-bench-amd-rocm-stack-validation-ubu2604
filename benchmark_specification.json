@@ -40,6 +40,11 @@
     "value": "Run rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query"
   },
   {
+    "field_name": "Execution Description With Parameters",
+    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
+    "value": "Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. When that field is absent, driver compliance is na (in-tree amdgpu has no version). rocm_version: documented expectation; the collector checks package presence rather than an exact version string. required_packages: ROCm 10.x dpkg names such as amdrocm-base10.1,amdrocm-amdsmi10.1 (the legacy rocm-core/rocm-smi packages are not shipped in ROCm 10.x). permissions_check: /dev/kfd and /dev/dri/renderD128 existence/read access"
+  },
+  {
     "field_name": "Metrics",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "#1: ROCm package mismatch count (rocm_package_mismatch_count); #2: Kernel release mismatch count (kernel_release_mismatch_count); #3: Driver compliance percent (driver_compliance_percent); #4: Permission error count (permission_error_count)"
@@ -173,11 +178,6 @@
     "field_name": "Command Methodology",
     "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
     "value": "Run each ROCm stack probe once (rvs --version, rocminfo, amd-smi version, amd-smi static, uname -a, modinfo amdgpu, hipcc --version, and dpkg-query), compare package presence, kernel release, driver compliance, and /dev/kfd plus /dev/dri/renderD128 permissions to yaml expectations, and emit one compliance row per check with that probe's own exit code in rc (127 = tool missing). yaml rocm_version is not an exact string compare"
-  },
-  {
-    "field_name": "Execution Description With Parameters",
-    "source_file": "BenchmarkSpecDefinitions.xlsx::Workload_Definitions",
-    "value": "Runs seven ROCm stack probes and emits one CSV row per tool. kernel_version: expected uname -r prefix, published as the kernel mismatch count. driver_version: compared with the amdgpu modinfo version field for driver compliance. ROCm 10.1.0 installs amdgpu-dkms 31.60.0, whose modinfo version field is 7.1.9.31600000, so driver_version 7.1.9 matches it. When that field is absent, driver compliance is na (in-tree amdgpu has no version). rocm_version: documented expectation; the collector checks package presence rather than an exact version string. required_packages: ROCm 10.x dpkg names such as amdrocm-base10.1,amdrocm-amdsmi10.1 (the legacy rocm-core/rocm-smi packages are not shipped in ROCm 10.x). permissions_check: /dev/kfd and /dev/dri/renderD128 existence/read access"
   },
   {
     "field_name": "Execution Domain",
